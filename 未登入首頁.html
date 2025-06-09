@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>未登入首頁</title>
+
+  <!--　核心色系：直接取自你現有頁面　-->
+  <style>
+    :root{
+      --bg:#0d0d0f;        /* 背景 */
+      --surface:#1a1a1c;   /* 區塊底色 */
+      --text:#c3c3c3;      /* 文字顏色 */
+      --navbar:#1a1a1c;
+    }
+
+    /* ===== 版面骨架 ===== */
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:"Noto Sans TC",Arial,sans-serif;
+    }
+    /* 頂端列 */
+    .navbar{
+      display:flex;
+      align-items:center;
+      height:64px;
+      padding:0 24px;
+      background:var(--surface);
+      font-size:1.3rem;
+    }
+
+    /* 中央 Hero 區 */
+    .hero{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:calc(100vh - 64px - 80px); /* 滿高減掉 navbar + footer */
+      background:var(--bg);
+      text-align:center;
+    }
+    .hero-btn{
+      min-width:240px;
+      padding:18px 56px;
+      font-size:1.4rem;
+      font-weight:600;
+      border:none;
+      color:var(--text);
+      background:var(--surface);
+      box-shadow:0 2px 12px rgba(0,0,0,.13),
+                 0 1.5px 4px rgba(0,0,0,.10);
+      cursor:pointer;
+      transition:background .2s,color .2s,box-shadow .18s;
+    }
+    .hero-btn:hover,
+    .hero-btn:focus-visible{
+      background:#3e3e42;
+      color:#e5e7eb;
+      box-shadow:0 4px 24px rgba(0,0,0,.17),
+                 0 2px  8px rgba(0,0,0,.13);
+      outline:none;
+    }
+
+    /* 底部列 */
+    .footer{
+      height:80px;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      background:var(--surface);
+      font-size:1.14rem;
+      letter-spacing:.04em;
+    }
+
+    /* 簡易 RWD：在窄螢幕時讓按鈕變寬 */
+    @media(max-width:600px){
+      .hero-btn{width:80%;}
+    }
+  </style>
+</head>
+
+<body>
+  <!--　Logo／導覽　-->
+  <header class="navbar">
+    Logo
+  </header>
+
+  <!--　中央 CTA　-->
+  <main class="hero">
+    <button class="hero-btn">開始學習</button>
+  </main>
+
+  <!--　頁尾　-->
+  <footer class="footer">
+    客服信箱
+  </footer>
+</body>
+</html>

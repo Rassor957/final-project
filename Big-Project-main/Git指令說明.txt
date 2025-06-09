@@ -1,0 +1,48 @@
+Git 常用刪除指令說明：
+
+1. 刪除檔案（會同時刪除實體檔案）：
+git rm 檔案名稱
+
+2. 只從 Git 追蹤中移除，保留實體檔案：
+git rm --cached 檔案名稱
+
+3. 刪除資料夾：
+git rm -r 資料夾名稱
+
+4. 強制刪除：
+git rm -f 檔案名稱
+
+5. 刪除 .git 資料夾（重置 Git 儲存庫）：
+rm -r -force .git
+
+提交和推送刪除：
+git commit -m "Remove files"
+git push
+
+參數說明：
+-r：用於處理資料夾
+-f：強制執行
+--cached：只從 Git 移除但保留實體檔案
+
+注意：任何刪除操作後都需要 commit 和 push 才會更新到 GitHub
+
+其他常用 Git 指令：
+1. 初始化：git init
+2. 添加檔案：git add .
+3. 提交更改：git commit -m "說明文字"
+4. 推送到 GitHub：git push
+5. 設定遠端：git remote add origin [GitHub儲存庫網址]
+6. 更改分支名稱：git branch -M main
+7. 強制推送：git push -f origin main
+
+推送指令說明：
+1. 第一次推送必須設定上游分支：
+   git push --set-upstream origin main
+   或是
+   git push -u origin main
+
+2. 設定好之後可以直接使用：
+   git push
+
+3. 需要強制推送時使用：
+   git push -f 

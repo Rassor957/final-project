@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube 影片字幕生成器</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,">
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube 影片字幕生成器</h1>
+        
+        <div class="input-section">
+            <input type="text" id="youtubeUrl" placeholder="請輸入 YouTube 影片連結">
+            <button id="startBtn">開始轉錄</button>
+        </div>
+
+        <div class="video-container">
+            <div id="player"></div>
+            <div id="subtitle">等待字幕生成...</div>
+        </div>
+
+        <div class="instructions">
+            <h2>使用說明</h2>
+            <ol>
+                <li>在上方輸入框中貼上 YouTube 影片連結</li>
+                <li>點擊「開始轉錄」按鈕</li>
+                <li>等待系統生成字幕（這可能需要幾分鐘，取決於影片長度）</li>
+                <li>字幕生成完成後，影片會自動開始播放</li>
+                <li>字幕會自動與影片同步顯示</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- 先載入主程式 -->
+    <script src="script.js"></script>
+    <!-- 再載入 YouTube IFrame API -->
+    <script>
+        // 載入 YouTube IFrame API
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        tag.setAttribute('origin', window.location.origin);
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    </script>
+</body>
+</html>

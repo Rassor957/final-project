@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>GPT 聊天室</title>
+    <!-- 載入 CSS 樣式 -->
+    <link rel="stylesheet" href="GPT.css" />
+    <script src="GPT.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- 聊天訊息區，會動態新增訊息 -->
+        <div class="chat-container" id="chat"></div>
+    </div>
+
+    <!-- 固定在底部的輸入區 -->
+    <div class="input-fixed-bottom">
+        <!-- 使用者輸入框 -->
+        <textarea id="userInput" placeholder="輸入您的問題..." rows="1"></textarea>
+        <!-- 送出按鈕，裡面有一個箭頭符號(用span包起來方便動態切換) -->
+        <button id="send"><span class="icon-arrow">↑</span></button>
+    </div>
+
+    <!-- 載入 JavaScript，控制前端行為 -->
+    
+</body>
+
+</html>

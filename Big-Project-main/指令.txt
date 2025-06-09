@@ -1,0 +1,36 @@
+uvicorn fastapi01:app --reload
+git hub 指令
+
+git push --force   # 如果你之前有說要蓋掉 GitHub 上的版本
+
+設定使用者名稱和信箱
+git  config  --global  user.name  "你的名稱"
+git  config  --global  user.email  "你的信箱"
+＊建議使用者名稱和信箱與 GitHub 帳戶一致
+
+
+
+查看 Git 版本(是否存在)
+git  version
+
+複製(下載) GitHub 數據庫至本機
+git  clone  數據庫位址
+git  clone  https://github.com/Ming-0422/Text
+
+
+＊適用 : 本機尚未存在這個數據庫 (通常只會執行一次)
+查看工作目錄及暫存區的狀態
+git  status
+
+將指定檔案放到暫存區列管(追蹤)
+git  add  檔案名稱
+
+將所在目錄的全部檔案放到暫存區列管(追蹤)
+git  add  .
+
+將暫存區的檔案提交到本機倉庫(提交新版本)
+git  commit  -m  "提交訊息"
+
+將工作目錄的檔案直接提交到本機倉庫(提交新版本)
+git  commit  -a  -m  "提交訊息"
+＊新增的檔案無法使用此指令

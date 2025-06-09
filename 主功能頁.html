@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+  <title>主頁面</title>
+  <style>
+    /* 全局：背景色、文字色、字体 */
+    body {
+      margin: 0;
+      background: #0d0d0f;
+      /* 原来：#181818，改为更深的梦魇背景 */
+      color: #c3c3c3;
+      /* 原来：#fff，文字改为浅灰以减低对比 */
+      font-family: "Noto Sans TC", Arial, sans-serif;
+    }
+
+    /* 导航栏：使用深色背景 + 浅灰文字 */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1a1a1c;
+      /* 原来：#fff，改为深灰 */
+      color: #c3c3c3;
+      /* 与正文文字保持一致 */
+      padding: 16px 24px;
+      font-size: 1.3em;
+    }
+
+    .navbar-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      width: 100%;
+      max-width: 1600px;
+      /* 跟 .main-layout 一樣 */
+      margin: 0 auto;
+      /* 置中對齊 */
+      padding: 0 24px;
+      /* 如原本 .navbar 是左右 24px，這裡保留 */
+      box-sizing: border-box;
+    }
+
+    .nav-links {
+      display: flex;
+      /* 让子项水平排列 */
+      gap: 30px;
+      /* 根据需求调整横向间距（单位可改为 16px、20px 等） */
+    }
+
+    .nav-links>div {
+      /* 原来没有单独定义链接颜色，此处显式调整 */
+      color: #c3c3c3;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* 主布局：保持原有黑色系，仅稍微调整容器背景 */
+    .main-layout {
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      gap: 24px;
+      width: 100vw;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 36px 0 0 0;
+      box-sizing: border-box;
+    }
+
+    /* 左侧视频容器：背景改为更深 */
+    .left-video {
+      flex: 3 1 0;
+      max-width: 1200px;
+      min-width: 320px;
+    }
+
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      /* 16:9 */
+      background: #1a1a1c;
+      /* 原来：#222，改为更深的灰黑 */
+      overflow: hidden;
+    }
+
+    .video-wrapper iframe,
+    .video-wrapper video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      border: none;
+      display: block;
+      object-fit: contain;
+    }
+
+    /* 原先新增的 .right-side 样式，增加宽度约束 */
+    .right-side {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+
+      /* 恢复固定宽度 */
+      flex: 0 0 350px;
+      max-width: 350px;
+      min-width: 200px;
+
+      background: #1a1a1c;
+      padding: 12px;
+      box-sizing: border-box;
+      color: #c3c3c3;
+      overflow: hidden;
+    }
+
+    /* 聊天區容器 */
+    /* 聊天区容器 */
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    /* 消息列表：可滚动 */
+    .messages {
+      flex: 1 1 auto;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    /* 单条消息 */
+    .message {
+      display: flex;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    /* GPT（靠左） */
+    .bot-message {
+      justify-content: flex-start;
+    }
+
+    .bot-message .message-text {
+      background: #2a2a2e;
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: #e5e7eb;
+      max-width: 80%;
+      word-break: break-word;
+    }
+
+    /* 用户（靠右） */
+    .user-message {
+      justify-content: flex-end;
+    }
+
+    .user-message .message-text {
+      background: #3e3e42;
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: #f3f4f6;
+      max-width: 80%;
+      word-break: break-word;
+    }
+
+
+    /* 底部輸入區 */
+    .input-area {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #2c2c2e;
+      /* 上方分隔線 */
+    }
+
+    /* 輸入框 */
+    .input-area input {
+      flex: 1;
+      background: #2a2a2e;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: #e5e7eb;
+      font-size: 0.95em;
+      outline: none;
+    }
+
+    /* placeholder 文字顏色 */
+    .input-area input::placeholder {
+      color: #6b7280;
+    }
+
+    /* 發送按鈕 */
+    .input-area button {
+      background: transparent;
+      border: none;
+      margin-left: 8px;
+      cursor: pointer;
+      color: #9ca3af;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s;
+    }
+
+    .input-area button:hover {
+      color: #e5e7eb;
+    }
+
+    .input-area button:disabled {
+      color: #4b5563;
+      cursor: default;
+    }
+
+    /* 按鈕內 SVG */
+    .input-area button svg {
+      display: block;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+
+    /* 原本的畫板設定（請將這段取代掉原本的 .canvas-area） */
+    .canvas-area {
+      background: #1a1a1c;
+
+
+      margin: 16px max(calc((100vw - 1600px) / 2), 0px);
+      width: 100%;
+      max-width: 1200px;
+
+
+      position: relative;
+      padding-top: 40%;
+
+      box-sizing: border-box;
+      margin-bottom: 100px;
+    }
+
+    /* 右下角佔位圖容器 */
+    .placeholder-container {
+      position: absolute;
+      bottom: 8px;
+      /* 根據需求可以微調距離底部的間距 */
+      right: 8px;
+      /* 根據需求可以微調距離右側的間距 */
+      display: flex;
+      gap: 1px;
+      overflow: hidden;
+      z-index: 2;
+    }
+
+    /* 固定寬高的佔位圖片 */
+    .placeholder-container img {
+      width: 100px;
+      height: 200px;
+      object-fit: cover;
+      /* 如果想強制裁剪填滿可保留，否則可刪 */
+    }
+
+    .pen-icon {
+      display: inline-block;
+      vertical-align: bottom;
+      transition: transform 0.22s cubic-bezier(.7, .02, .37, 1);
+      cursor: pointer;
+      /* 畫筆預設往下偏移 */
+      transform: translateY(90px);
+      /* 預設往下藏部分 */
+      /* 若在畫布邊緣，請微調此偏移 */
+    }
+
+    .pen-icon:hover,
+    .pen-icon.active {
+      /* active 方便JS設置拖曳態 */
+      transform: translateY(60px);
+      /* 升起來 */
+    }
+
+    /* 筆桿樣式 */
+    .pen-body {
+      fill: #c3c3c3;
+      /* 預設顏色，JS動態設置即可變 */
+      /*transition: width 0.2s, fill 0.2s;*/
+    }
+
+    /* 筆尖樣式 */
+    .pen-tip {
+      fill: #c3c3c3;
+      transition: fill 0.2s;
+    }
+
+    /* 壓住滑鼠左鍵「向上拖」時加class .thin，筆桿縮窄 */
+    .pen-icon.thin .pen-body {
+      width: 4px;
+      x: 14px;
+      /* 注意需同步調整 x 屬性！JS控制更方便 */
+    }
+
+    .pen-icon.thick .pen-body {
+      width: 12px;
+      x: 10px;
+      /* 粗時x左移保持中心 */
+    }
+
+    /* 光暈效果：左右 + 下邊 */
+    .pen-glow {
+      filter: drop-shadow(0 0 3px rgba(255, 255, 255, .9)) drop-shadow(0 0 6px rgba(255, 255, 255, .6));
+    }
+
+    /* 鎖定狀態：強制保持升起位移 */
+    .pen-icon.locked {
+      transform: translateY(60px) !important;
+      /* 與 :hover 同高度 */
+    }
+
+    
+/* 橡皮擦顏色 (稍淺、與筆有區隔) */
+.eraser-head { fill:#bfbfbf; }
+.eraser-body { fill:#bfbfbf; }
+
+.eraser-icon{
+  display:inline-block;
+  vertical-align:bottom;
+  cursor:pointer;
+  transform:translateY(90px);
+  transition:transform .22s cubic-bezier(.7,.02,.37,1);
+}
+.eraser-icon:hover,
+.eraser-icon.active{
+  transform:translateY(60px);
+}
+
+/* 鎖定時保持升起 */
+.eraser-icon.locked{ transform:translateY(60px)!important; }
+
+/* 給橡皮擦光暈（同筆） */
+.eraser-glow{
+  filter:drop-shadow(0 0 3px rgba(255,255,255,.9))
+         drop-shadow(0 0 6px rgba(255,255,255,.6));
+}
+/* —— 文字方块图标（Serif A）—— */
+.text-icon {
+  display: inline-block;
+  vertical-align: bottom;
+  cursor: pointer;
+  transform: translateY(110px);
+  transition: transform .22s cubic-bezier(.7,.02,.37,1), filter .2s;
+  font-family: serif;
+  font-size: 2rem;        /* 从1.5rem改为2rem */
+  width: 40px;            /* 扩大到40×40像素 */
+  height: 40px;
+  text-align: center;
+  line-height: 40px;
+  color: #c3c3c3;
+  padding: 4px;           /* 增加可点击范围 */
+}
+.text-icon:hover,
+.text-icon.active {
+  transform: translateY(100px);
+}
+.text-icon.locked {
+  filter: drop-shadow(0 0 6px rgba(255,255,255,0.8));
+}
+
+/* 先让 span 本身不接受任何点击事件 */
+.eraser-icon,
+.pen-icon,
+.text-icon {
+  pointer-events: none;
+}
+
+/* 再让内部的 SVG 根元素重新接受点击，但只在有“绘制”内容的位置 */
+.eraser-icon svg,
+.pen-icon svg,
+.text-icon {
+  pointer-events: visiblePainted;  /* 只在“已填充”或“已描边”部分触发 */
+}
+
+/* —— 画布上的文字输入框 —— */
+.canvas-text-input {
+  position: absolute;
+  border: 1px dashed #777;
+  background: transparent;
+  color: #c3c3c3;
+  font-family: serif;
+  font-size: 1rem;
+  padding: 2px 4px;
+  outline: none;
+  min-width: 50px;
+}
+
+
+
+
+    .start-quiz-btn {
+      font-family: var(--body-font, Inter, "Noto Sans SC", "Noto Sans TC", Arimo, Verdana, Geneva, sans-serif);
+      font-size: 1.02rem;
+      font-weight: 600;
+      min-width: 9.5em;
+      min-height: 2.3em;
+      letter-spacing: 0.01em;
+      border: none;
+      background: #2c2c2d;
+      color: #c3c3c3;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.13), 0 1.5px 4px rgba(0, 0, 0, 0.10);
+      cursor: pointer;
+      transition: background 0.2s cubic-bezier(.4, .09, .35, 1), color 0.2s, box-shadow .18s cubic-bezier(.4, .09, .35, 1);
+      user-select: none;
+      position: absolute;
+      bottom: -80px;
+      right: 16px;
+      z-index: 10;
+      display: flex;
+      line-height: 1;
+      justify-content: center;
+      align-items: center;
+      height: 2rem;
+      text-decoration: none;
+      padding: 0 0.25rem;
+      margin: 0;
+    }
+
+    .start-quiz-btn:hover,
+    .start-quiz-btn:focus-visible {
+      outline: none;
+      background: rgba(62, 62, 67, 1);
+      color: rgba(195, 195, 195, 1);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.17), 0 2px 8px rgba(0, 0, 0, 0.13);
+    }
+
+    .footer {
+      background: #1a1a1c;
+      color: #c3c3c3;
+      width: 100vw;
+      padding: 18px 0 18px 0;
+      margin: 0;
+      /* 保證不會貼齊畫面底部（避免和視窗底藍條重疊） */
+    }
+
+    .footer-container {
+      max-width: 1600px;
+      margin: 0 auto;
+      text-align: center;
+      font-size: 1.14em;
+      font-family: inherit;
+      letter-spacing: 0.04em;
+    }
+
+    #draw-canvas {
+      position: absolute;
+      inset: 0;
+      /* top:0; right:0; bottom:0; left:0; */
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      /* 方便使用者辨識可繪圖區域 */
+      z-index: 1;
+    }
+
+
+
+    /* 响应式：略微压暗间隔色调 */
+    @media (max-width: 1100px) {
+      .main-layout {
+        gap: 14px;
+      }
+
+      .right-side {
+        max-width: 250px;
+      }
+
+      .left-video {
+        max-width: 98vw;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .main-layout {
+        flex-direction: column;
+        align-items: center;
+        padding: 10px 0 0 0;
+      }
+
+      .left-video,
+      .right-side {
+        max-width: 98vw;
+        width: 98vw;
+        min-width: 0;
+      }
+
+      .right-side {
+        margin-top: 18px;
+        min-height: 120px;
+      }
+
+      .canvas-area {
+        margin-left: 0;
+        width: 98vw;
+        max-width: none;
+      }
+    }
+  </style>
+
+</head>
+
+<body>
+  <!-- 導覽列 -->
+  <div class="navbar">
+    <div class="navbar-container">
+      <div>Logo</div>
+      <div class="nav-links">
+        <div>資料中心</div>
+        <div>商城</div>
+        <div>經驗值</div>
+        <div>設定</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <!-- 左側主影片 -->
+    <div class="left-video" id="video-area">
+      <div class="video-wrapper">
+        <!-- 可以放 YouTube 影片或本地 video -->
+        <iframe src="https://www.youtube.com/embed/AtAxVcRj8dY?si=nUSEYkHmD6SXIS4w" title="YouTube video player"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      </div>
+      <!-- 如有字幕可自行加入 -->
+    </div>
+    <!-- 右側大佔位div -->
+    <!-- ================= 修改後的 .right-side HTML ================= -->
+    <div class="right-side">
+      <div class="chat-container">
+        <!-- 聊天紀錄區 -->
+        <div class="messages">
+          <!-- 假資料範例：後續可用 JavaScript 動態填充 -->
+          <div class="message bot-message">
+            <div class="message-text">您好！這裡是模擬對話。</div>
+          </div>
+          <div class="message user-message">
+            <div class="message-text">請問如何串接 GPT API？</div>
+          </div>
+          <div class="message bot-message">
+            <div class="message-text">可以先在輸入框輸入訊息，然後按下右側箭頭按鈕。</div>
+          </div>
+          <!-- 如果訊息過長，可讓 .messages 自動捲動 -->
+        </div>
+
+        <!-- 底部輸入區 -->
+        <div class="input-area">
+          <input type="text" id="gpt-input" placeholder="輸入訊息…" autocomplete="off" />
+          <button id="gpt-send-button" aria-label="Send">
+            <!-- SVG 箭頭圖示 -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="feather feather-send">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="canvas-area">
+    <div class="placeholder-container">
+      <span class="pen-icon" tabindex="0">
+        <svg height="150" viewBox="0 0 32 64" fill="none">
+          <!-- 筆桿 (長方形) -->
+          <rect class="pen-body" x="12" y="22" width="8" height="40" />
+          <!-- 筆尖 (三角形，底部距筆桿 10px) -->
+          <polygon class="pen-tip" points="12,20 20,20 16,10" />
+        </svg>
+      </span>
+      <!-- 這裡是橡皮擦圖示 -->
+      <span class="eraser-icon" tabindex="0">
+    <svg height="150" viewBox="0 0 32 64" fill="none">
+      <!-- 半橢圓 (上半部) -->
+      <path class="eraser-head" d="M6 22a10 10 0 0 1 20 0Z" />
+      
+      <!-- 長方體 (身體) -->
+      <rect class="eraser-body" x="6" y="26" width="20" height="30" rx="2"/>
+    </svg>
+  </span>
+      <span class="text-icon" tabindex="0">A</span>
+    </div>
+    <canvas id="draw-canvas"></canvas>
+
+    <button class="start-quiz-btn">開始測驗</button>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-container">
+      客服信箱
+    </div>
+  </footer>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // --- 元素與上下文 ---
+  const penIcon    = document.querySelector('.pen-icon');
+  const penBody    = penIcon.querySelector('.pen-body');
+  const penTip     = penIcon.querySelector('.pen-tip');
+  const eraserIcon = document.querySelector('.eraser-icon');
+  const textIcon   = document.querySelector('.text-icon');
+  const pictures   = document.querySelectorAll('.placeholder-container img');
+  const canvasArea = document.querySelector('.canvas-area');
+  const canvas     = document.getElementById('draw-canvas');
+  const ctx        = canvas.getContext('2d');
+
+  // --- 狀態與常量 ---
+  const CENTER_X     = 16;
+  const ERASER_WIDTH = 20;
+  let thickness      = 8;
+  let isLocked       = false;
+  let isEraser       = false;
+  let isText         = false;
+  let isDragging     = false;
+  let lastY          = 0;
+  let isDrawing      = false;
+  let strokes        = [];
+  let currentStroke  = null;
+  let justFinishedText = false; // 防止連續開輸入框
+
+  // --- 工具列行為 ---
+  function updatePen(w) {
+    const left  = CENTER_X - w/2, right = CENTER_X + w/2;
+    penBody.setAttribute('width',  w);
+    penBody.setAttribute('x',      left);
+    penTip.setAttribute('points',  `${left},20 ${right},20 ${CENTER_X},10`);
+  }
+  function lockPen()    { isLocked = true;   isEraser = false; isText = false;
+                         penIcon.classList.add('locked','pen-glow');
+                         eraserIcon.classList.remove('locked','eraser-glow','active');
+                         textIcon.classList.remove('locked','active'); }
+  function lockEraser() { isLocked = true;   isEraser = true;  isText = false;
+                         eraserIcon.classList.add('locked','eraser-glow');
+                         penIcon.classList.remove('locked','pen-glow','active');
+                         textIcon.classList.remove('locked','active'); }
+  function lockText()   { isLocked = true;   isEraser = false; isText = true;
+                         textIcon.classList.add('locked');
+                         penIcon.classList.remove('locked','pen-glow','active');
+                         eraserIcon.classList.remove('locked','eraser-glow','active'); }
+  function unlockAll()  { isLocked = false;  isEraser = false; isText = false;
+                         penIcon.classList.remove('locked','pen-glow','active');
+                         eraserIcon.classList.remove('locked','eraser-glow','active');
+                         textIcon.classList.remove('locked','active'); }
+
+  // hover 效果
+  [penIcon, eraserIcon, textIcon].forEach(el => {
+    el.addEventListener('mouseenter', () => { if (!isLocked) el.classList.add('active'); });
+    el.addEventListener('mouseleave', () => { if (!isLocked) el.classList.remove('active'); });
+  });
+  penIcon   .addEventListener('click', () => { if (!isLocked||isEraser||isText) lockPen();    else unlockAll(); });
+  eraserIcon.addEventListener('click', () => { if (!isLocked||!isEraser||isText) lockEraser(); else unlockAll(); });
+  textIcon  .addEventListener('click', () => { if (!isLocked||isEraser||!isText) lockText();   else unlockAll(); });
+  pictures.forEach(img => img.addEventListener('click', () => { if (isLocked) unlockAll(); }));
+
+  // Ctrl+Z 撤銷
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey||e.metaKey) && e.key==='z') {
+      e.preventDefault();
+      strokes.pop();
+      redrawAll();
+    }
+  });
+
+  // Canvas 大小同步
+// ...existing code...
+function resizeCanvas() {
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width  = canvas.offsetWidth * dpr;
+  canvas.height = canvas.offsetHeight * dpr;
+  canvas.style.width  = canvas.offsetWidth + "px";
+  canvas.style.height = canvas.offsetHeight + "px";
+  ctx.setTransform(1, 0, 0, 1, 0, 0); // 重設 transform
+  ctx.scale(dpr, dpr);
+  redrawAll();
+}
+// ...existing code...
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  // 滑鼠位置 → Canvas 座標
+  function pos(e) {
+    const r = canvas.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  }
+
+  // --- 文字模式：點擊畫布插入 <input>，失焦後繪製文字、移除 input（且無任何殘留「圓點」） ---
+canvas.addEventListener('click', e => {
+  if (!isLocked || !isText) return;
+  
+  // 如果剛完成文字輸入，忽略這次點擊
+  if (justFinishedText) {
+    justFinishedText = false;
+    return;
+  }
+
+  // 避免已有輸入框時重複插入
+  if (document.querySelector('.canvas-text-input')) return;
+
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'canvas-text-input';
+  input.style.left = `${x}px`;
+  input.style.top = `${y}px`;
+  canvasArea.appendChild(input);
+  input.focus();
+
+  input.addEventListener('mousedown', ev => ev.stopPropagation());
+  input.addEventListener('click', ev => ev.stopPropagation());
+
+  input.addEventListener('blur', ev => {
+    const text = input.value.trim();
+    input.remove();
+    justFinishedText = true; // 設置標記
+    setTimeout(() => justFinishedText = false, 100); // 短暫延遲後清除
+    
+    if (!text) return;
+    ctx.save();
+    ctx.fillStyle = '#c3c3c3';
+    ctx.font = '1rem serif';
+    ctx.textBaseline = 'top';
+    ctx.fillText(text, x, y);
+    ctx.restore();
+    strokes.push({ type: 'text', x, y, text });
+  });
+});
+
+
+  // --- 繪筆／橡皮擦邏輯 ---
+  canvas.addEventListener('mousedown', e => {
+    if (!isLocked || e.button!==0) return;
+    isDrawing = true;
+    const { x, y } = pos(e);
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineCap  = ctx.lineJoin = 'round';
+
+    if (isEraser) {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.lineWidth = ERASER_WIDTH;
+    } else {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = '#c3c3c3';
+      ctx.lineWidth   = thickness;
+      currentStroke   = { points:[{x,y}], width:thickness };
+    }
+
+  });
+
+  canvas.addEventListener('mousemove', e => {
+    if (!isDrawing || e.buttons!==1) return;
+    const { x, y } = pos(e);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    if (!isEraser && currentStroke) currentStroke.points.push({x,y});
+  });
+
+  function endStroke() {
+    if (!isDrawing) return;
+    isDrawing = false;
+    ctx.closePath();
+    if (!isEraser && currentStroke) strokes.push(currentStroke);
+    currentStroke = null;
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  canvas.addEventListener('mouseup',    endStroke);
+  canvas.addEventListener('mouseleave', endStroke);
+  document.addEventListener('mouseup',  endStroke);
+
+  // --- 重繪所有內容（用於撤銷後） ---
+  function redrawAll() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const s of strokes) {
+      if (s.type==='text') {
+        ctx.save();
+        ctx.fillStyle = '#c3c3c3';
+        ctx.font      = '1rem serif';
+        ctx.textBaseline = 'top';
+        ctx.fillText(s.text, s.x, s.y);
+        ctx.restore();
+      } else {
+        ctx.beginPath();
+        ctx.lineCap    = ctx.lineJoin = 'round';
+        ctx.strokeStyle= '#c3c3c3';
+        ctx.lineWidth  = s.width;
+        const [first,...rest] = s.points;
+        ctx.moveTo(first.x, first.y);
+        rest.forEach(pt => ctx.lineTo(pt.x, pt.y));
+        ctx.stroke();
+        ctx.closePath();
+      }
+    }
+  }
+
+  // --- 畫筆粗細調整 ---
+  updatePen(thickness);
+  penIcon.addEventListener('mousedown', e => {
+    if (!isLocked || isEraser) return;
+    isDragging = true; lastY = e.clientY;
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    const dy = e.clientY - lastY;
+    lastY = e.clientY;
+    thickness = Math.max(3, Math.min(14, thickness - dy*0.15));
+    updatePen(thickness);
+  });
+  document.addEventListener('mouseup', () => { isDragging = false; });
+});
+
+
+</script>
+
+</body>
+
+
+</html>
