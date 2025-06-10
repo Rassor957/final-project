@@ -1095,72 +1095,88 @@ ioCanvas.observe(document.querySelector('.canvas-area'));
 
 
 // === GPT 聊天室整合 ===
-// 聊天區容器與訊息列表
-const messagesDiv = document.querySelector('.right-side .messages');
-// 輸入框與按鈕
-const gptInput = document.getElementById('gpt-input');
-const gptSendButton = document.getElementById('gpt-send-button');
-// 產生 sessionId
-const gptSessionId = crypto.randomUUID();
+document.addEventListener('DOMContentLoaded', () => {
+  // 获取所有聊天相关元素
+  const inputs      = Array.from(document.querySelectorAll('#gpt-input'));
+  const buttons     = Array.from(document.querySelectorAll('#gpt-send-button'));
+  const messagesDivs = Array.from(document.querySelectorAll('.right-side .messages'));
+  const gptSessionId = crypto.randomUUID();
 
-// 將訊息加到聊天室
-function addMessage(isUser, text) {
-  const msgDiv = document.createElement('div');
-  msgDiv.className = 'message ' + (isUser ? 'user-message' : 'bot-message');
-  const textDiv = document.createElement('div');
-  textDiv.className = 'message-text';
-  textDiv.textContent = text;
-  msgDiv.appendChild(textDiv);
-  messagesDiv.appendChild(msgDiv);
-  // 自動捲到底部
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
-}
+  // 创建一条消息的 DOM
+  function createMessageElement(isUser, text) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'message ' + (isUser ? 'user-message' : 'bot-message');
+    const textDiv = document.createElement('div');
+    textDiv.className = 'message-text';
+    textDiv.textContent = text;
+    msgDiv.appendChild(textDiv);
+    return msgDiv;
+  }
 
-// 發送按鈕或 Enter
-async function handleGptSend() {
-  const userText = gptInput.value.trim();
-  if (!userText) return;
-  addMessage(true, userText);
-  gptInput.value = '';
-  gptSendButton.disabled = true;
+  // 发送逻辑：读取当前可见输入框，向所有 messages 容器写入
+  async function handleGptSend() {
+    // 找到当前可见的输入框
+    const activeInput = inputs.find(i => i.offsetParent !== null);
+    if (!activeInput) return;
+    const userText = activeInput.value.trim();
+    if (!userText) return;
 
-  // loading訊息
-  const loadingDiv = document.createElement('div');
-  loadingDiv.className = 'message bot-message';
-  const loadingText = document.createElement('div');
-  loadingText.className = 'message-text';
-  loadingText.innerHTML = `<span class="loading-icon" style="display:inline-block;width:16px;height:16px;border:3px solid #fff;border-top:3px solid #000;border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;"></span> 載入中...`;
-  loadingDiv.appendChild(loadingText);
-  messagesDiv.appendChild(loadingDiv);
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    // 清空输入框并禁用按钮
+    activeInput.value = '';
+    buttons.forEach(btn => btn.disabled = true);
 
-  try {
-    const response = await fetch('http://localhost:8080/GPT/P1', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question: userText, sessionId: gptSessionId })
+    // 将使用者消息添加到所有聊天区
+    messagesDivs.forEach(div => {
+      div.appendChild(createMessageElement(true, userText));
+      div.scrollTop = div.scrollHeight;
     });
-    let reply;
-    if (response.ok) {
-      reply = await response.text();
-    } else {
-      reply = '伺服器錯誤，請稍後再試';
-    }
-    loadingText.textContent = reply;
-  } catch (e) {
-    loadingText.textContent = '連線失敗，請檢查網路與伺服器狀態';
-  } finally {
-    gptSendButton.disabled = false;
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-  }
-}
 
-gptSendButton.addEventListener('click', handleGptSend);
-gptInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    handleGptSend();
+    // 显示所有聊天区的「載入中...」
+    const loadingEntries = messagesDivs.map(div => {
+      const loadingDiv = createMessageElement(false, '');
+      const loadingText = loadingDiv.querySelector('.message-text');
+      loadingText.innerHTML = `<span class="loading-icon" style="
+        display:inline-block;width:16px;height:16px;
+        border:3px solid #fff;border-top:3px solid #000;
+        border-radius:50%;animation:spin 1s linear infinite;
+        vertical-align:middle;"></span> 載入中...`;
+      div.appendChild(loadingDiv);
+      div.scrollTop = div.scrollHeight;
+      return { div, loadingText };
+    });
+
+    try {
+      const resp = await fetch('http://localhost:8080/GPT/P1', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: userText, sessionId: gptSessionId })
+      });
+      const reply = resp.ok ? await resp.text() : '伺服器錯誤，請稍後再試';
+      // 更新所有 loading 文本为回复
+      loadingEntries.forEach(({ div, loadingText }) => {
+        loadingText.textContent = reply;
+        div.scrollTop = div.scrollHeight;
+      });
+    } catch (e) {
+      loadingEntries.forEach(({ div, loadingText }) => {
+        loadingText.textContent = '連線失敗，請檢查網路與伺服器狀態';
+        div.scrollTop = div.scrollHeight;
+      });
+    } finally {
+      buttons.forEach(btn => btn.disabled = false);
+    }
   }
+
+  // 绑定按钮和回车事件
+  buttons.forEach(btn => btn.addEventListener('click', handleGptSend));
+  inputs.forEach(input => {
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleGptSend();
+      }
+    });
+  });
 });
 
   </script>

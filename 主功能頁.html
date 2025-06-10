@@ -62,11 +62,11 @@
       display: flex;
       justify-content: center;
       align-items: stretch;
-      gap: 24px;
-      width: 100vw;
+      gap: 16px;
+      width: 100%;
       max-width: 1600px;
       margin: 0 auto;
-      padding: 36px 0 0 0;
+      padding: 36px 24px 0 24px;
       box-sizing: border-box;
     }
 
@@ -100,37 +100,43 @@
       object-fit: contain;
     }
 
-    /* 原先新增的 .right-side 样式，增加宽度约束 */
-    .right-side {
-      position: relative;
-      display: flex;
-      flex-direction: column;
+    /* 修復右側聊天區域 */
+.right-side {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  
+  /* 固定寬度 */
+  flex: 0 0 350px;
+  max-width: 350px;
+  min-width: 200px;
+  
+  background: #1a1a1c;
+  padding: 12px;
+  box-sizing: border-box;
+  color: #c3c3c3;
+  overflow: hidden;
+  
+  /* 關鍵：計算出與影片相同的高度 - 16:9比例 + padding */
+  height: calc(((100vw - 48px - 350px) * 0.5625) + 0px);
+  max-height: calc((1200px * 0.5625) + 0px);
+}
 
-      /* 恢复固定宽度 */
-      flex: 0 0 350px;
-      max-width: 350px;
-      min-width: 200px;
-
-      background: #1a1a1c;
-      padding: 12px;
-      box-sizing: border-box;
-      color: #c3c3c3;
-      overflow: hidden;
-    }
-
-    /* 聊天區容器 */
-    /* 聊天区容器 */
+    /* 聊天區容器 - 關鍵修復 */
     .chat-container {
       display: flex;
       flex-direction: column;
-      height: 100%;
+      height: 100%; /* 填滿父容器 */
+      overflow: hidden; /* 防止溢出 */
     }
 
-    /* 消息列表：可滚动 */
+    /* 消息列表：可滚动 - 關鍵修復 */
     .messages {
-      flex: 1 1 auto;
+      flex: 1 1 auto; /* 佔用剩餘空間 */
       overflow-y: auto;
       padding-right: 4px;
+      /* 移除 max-height 和 min-height，讓它自動填滿 */
+      margin-bottom: 8px; /* 與輸入區域的間隔 */
     }
 
     /* 单条消息 */
@@ -255,7 +261,7 @@
       /* 根據需求可以微調距離右側的間距 */
       display: flex;
       gap: 1px;
-      overflow: hidden;
+      overflow: visible;
       z-index: 2;
     }
 
@@ -322,82 +328,169 @@
       /* 與 :hover 同高度 */
     }
 
-    
-/* 橡皮擦顏色 (稍淺、與筆有區隔) */
-.eraser-head { fill:#bfbfbf; }
-.eraser-body { fill:#bfbfbf; }
+    /* 顏色選擇器 */
+    .color-picker {
+      position: absolute;
+      bottom: 180px;
+      /* 在筆尖上方 */
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      gap: 8px;
+      background: rgba(26, 26, 28, 0.9);
+      padding: 8px 12px;
+      border-radius: 20px;
+      border: 1px solid #3a3a3c;
+      z-index: 5;
+    }
 
-.eraser-icon{
-  display:inline-block;
-  vertical-align:bottom;
-  cursor:pointer;
-  transform:translateY(90px);
-  transition:transform .22s cubic-bezier(.7,.02,.37,1);
-}
-.eraser-icon:hover,
-.eraser-icon.active{
-  transform:translateY(60px);
+.color-picker.show {
+  display: flex;
 }
 
-/* 鎖定時保持升起 */
-.eraser-icon.locked{ transform:translateY(60px)!important; }
-
-/* 給橡皮擦光暈（同筆） */
-.eraser-glow{
-  filter:drop-shadow(0 0 3px rgba(255,255,255,.9))
-         drop-shadow(0 0 6px rgba(255,255,255,.6));
-}
-/* —— 文字方块图标（Serif A）—— */
-.text-icon {
-  display: inline-block;
-  vertical-align: bottom;
+/* 增強顏色選項的視覺效果 */
+.color-option {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
   cursor: pointer;
-  transform: translateY(110px);
-  transition: transform .22s cubic-bezier(.7,.02,.37,1), filter .2s;
-  font-family: serif;
-  font-size: 2rem;        /* 从1.5rem改为2rem */
-  width: 40px;            /* 扩大到40×40像素 */
-  height: 40px;
-  text-align: center;
-  line-height: 40px;
-  color: #c3c3c3;
-  padding: 4px;           /* 增加可点击范围 */
-}
-.text-icon:hover,
-.text-icon.active {
-  transform: translateY(100px);
-}
-.text-icon.locked {
-  filter: drop-shadow(0 0 6px rgba(255,255,255,0.8));
+  border: 2px solid transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
 }
 
-/* 先让 span 本身不接受任何点击事件 */
-.eraser-icon,
-.pen-icon,
-.text-icon {
-  pointer-events: none;
+.color-option:hover {
+  transform: scale(1.15);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
-/* 再让内部的 SVG 根元素重新接受点击，但只在有“绘制”内容的位置 */
-.eraser-icon svg,
-.pen-icon svg,
-.text-icon {
-  pointer-events: visiblePainted;  /* 只在“已填充”或“已描边”部分触发 */
+/* 被選中的顏色會發光 */
+.color-option.selected {
+  border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 
+    0 0 12px rgba(255, 255, 255, 0.6),
+    0 0 24px rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
 }
 
-/* —— 画布上的文字输入框 —— */
-.canvas-text-input {
-  position: absolute;
-  border: 1px dashed #777;
-  background: transparent;
-  color: #c3c3c3;
-  font-family: serif;
-  font-size: 1rem;
-  padding: 2px 4px;
-  outline: none;
-  min-width: 50px;
+.color-option.selected:hover {
+  transform: scale(1.2);
+  box-shadow: 
+    0 0 16px rgba(255, 255, 255, 0.7),
+    0 0 30px rgba(255, 255, 255, 0.4);
 }
 
+    /* 顏色定義 */
+    .color-red {
+      background-color: #ef4444;
+    }
+
+    .color-yellow {
+      background-color: #eab308;
+    }
+
+    .color-blue {
+      background-color: #3b82f6;
+    }
+
+    .color-white {
+      background-color: #c3c3c3;
+    }
+
+    /* 橡皮擦顏色 (稍淺、與筆有區隔) */
+    .eraser-head {
+      fill: #bfbfbf;
+    }
+
+    .eraser-body {
+      fill: #bfbfbf;
+    }
+
+    .eraser-icon {
+      display: inline-block;
+      vertical-align: bottom;
+      cursor: pointer;
+      transform: translateY(90px);
+      transition: transform .22s cubic-bezier(.7, .02, .37, 1);
+    }
+
+    .eraser-icon:hover,
+    .eraser-icon.active {
+      transform: translateY(60px);
+    }
+
+    /* 鎖定時保持升起 */
+    .eraser-icon.locked {
+      transform: translateY(60px) !important;
+    }
+
+    /* 給橡皮擦光暈（同筆） */
+    .eraser-glow {
+      filter: drop-shadow(0 0 3px rgba(255, 255, 255, .9)) drop-shadow(0 0 6px rgba(255, 255, 255, .6));
+    }
+
+    /* —— 文字方块图标（Serif A）—— */
+    .text-icon {
+      display: inline-block;
+      vertical-align: bottom;
+      cursor: pointer;
+      transform: translateY(110px);
+      transition: transform .22s cubic-bezier(.7, .02, .37, 1), filter .2s;
+      font-family: serif;
+      font-size: 2rem;
+      /* 从1.5rem改为2rem */
+      width: 40px;
+      /* 扩大到40×40像素 */
+      height: 40px;
+      text-align: center;
+      line-height: 40px;
+      color: #c3c3c3;
+      padding: 4px;
+      /* 增加可点击范围 */
+    }
+
+    .text-icon:hover,
+    .text-icon.active {
+      transform: translateY(100px);
+    }
+
+    .text-icon.locked {
+      filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.8));
+    }
+
+
+
+    /* 再让内部的 SVG 根元素重新接受点击，但只在有“绘制”内容的位置 */
+    .eraser-icon svg,
+    .pen-icon svg,
+    .text-icon {
+      pointer-events: visiblePainted;
+      /* 只在“已填充”或“已描边”部分触发 */
+    }
+
+    /* —— 画布上的文字输入框 —— */
+    .canvas-text-input {
+      position: absolute;
+      border: 1px dashed #777;
+      background: transparent;
+      color: #c3c3c3;
+      font-family: serif;
+      font-size: 1rem;
+      padding: 2px 4px;
+      outline: none;
+      min-width: 50px;
+    }
+    /* 在 style 區塊最後加上 */
+.placeholder-container-blocker {
+position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -88px;
+    height: 80px;
+    background: #0d0d0f;
+    z-index: 3;
+    pointer-events: none;
+}
 
 
 
@@ -545,15 +638,7 @@
         <!-- 聊天紀錄區 -->
         <div class="messages">
           <!-- 假資料範例：後續可用 JavaScript 動態填充 -->
-          <div class="message bot-message">
-            <div class="message-text">您好！這裡是模擬對話。</div>
-          </div>
-          <div class="message user-message">
-            <div class="message-text">請問如何串接 GPT API？</div>
-          </div>
-          <div class="message bot-message">
-            <div class="message-text">可以先在輸入框輸入訊息，然後按下右側箭頭按鈕。</div>
-          </div>
+          
           <!-- 如果訊息過長，可讓 .messages 自動捲動 -->
         </div>
 
@@ -584,18 +669,26 @@
           <!-- 筆尖 (三角形，底部距筆桿 10px) -->
           <polygon class="pen-tip" points="12,20 20,20 16,10" />
         </svg>
+        <!-- 顏色選擇器 -->
+        <div class="color-picker">
+          <div class="color-option color-red" data-color="#ef4444"></div>
+          <div class="color-option color-yellow" data-color="#eab308"></div>
+          <div class="color-option color-blue" data-color="#3b82f6"></div>
+          <div class="color-option color-white selected" data-color="#c3c3c3"></div>
+        </div>
       </span>
       <!-- 這裡是橡皮擦圖示 -->
       <span class="eraser-icon" tabindex="0">
-    <svg height="150" viewBox="0 0 32 64" fill="none">
-      <!-- 半橢圓 (上半部) -->
-      <path class="eraser-head" d="M6 22a10 10 0 0 1 20 0Z" />
-      
-      <!-- 長方體 (身體) -->
-      <rect class="eraser-body" x="6" y="26" width="20" height="30" rx="2"/>
-    </svg>
-  </span>
+        <svg height="150" viewBox="0 0 32 64" fill="none">
+          <!-- 半橢圓 (上半部) -->
+          <path class="eraser-head" d="M6 22a10 10 0 0 1 20 0Z" />
+
+          <!-- 長方體 (身體) -->
+          <rect class="eraser-body" x="6" y="26" width="20" height="30" rx="2" />
+        </svg>
+      </span>
       <span class="text-icon" tabindex="0">A</span>
+      <div class="placeholder-container-blocker"></div>
     </div>
     <canvas id="draw-canvas"></canvas>
 
@@ -607,229 +700,386 @@
       客服信箱
     </div>
   </footer>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  // --- 元素與上下文 ---
-  const penIcon    = document.querySelector('.pen-icon');
-  const penBody    = penIcon.querySelector('.pen-body');
-  const penTip     = penIcon.querySelector('.pen-tip');
-  const eraserIcon = document.querySelector('.eraser-icon');
-  const textIcon   = document.querySelector('.text-icon');
-  const pictures   = document.querySelectorAll('.placeholder-container img');
-  const canvasArea = document.querySelector('.canvas-area');
-  const canvas     = document.getElementById('draw-canvas');
-  const ctx        = canvas.getContext('2d');
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // --- 元素與上下文 ---
+      const penIcon = document.querySelector('.pen-icon');
+      const penBody = penIcon.querySelector('.pen-body');
+      const penTip = penIcon.querySelector('.pen-tip');
+      const eraserIcon = document.querySelector('.eraser-icon');
+      const textIcon = document.querySelector('.text-icon');
+      const pictures = document.querySelectorAll('.placeholder-container img');
+      const canvasArea = document.querySelector('.canvas-area');
+      const canvas = document.getElementById('draw-canvas');
+      const ctx = canvas.getContext('2d');
+      const colorPicker = penIcon.querySelector('.color-picker');
+      const colorOptions = penIcon.querySelectorAll('.color-option');
+      let penColor = '#c3c3c3'; // 當前筆的顏色
+      let isDraggingColor = false; // 新增：是否正在拖動選擇顏色
+      let lastX = 0; // 新增：記錄上次的 X 座標
 
-  // --- 狀態與常量 ---
-  const CENTER_X     = 16;
-  const ERASER_WIDTH = 20;
-  let thickness      = 8;
-  let isLocked       = false;
-  let isEraser       = false;
-  let isText         = false;
-  let isDragging     = false;
-  let lastY          = 0;
-  let isDrawing      = false;
-  let strokes        = [];
-  let currentStroke  = null;
-  let justFinishedText = false; // 防止連續開輸入框
+      // --- 狀態與常量 ---
+      const CENTER_X = 16;
+      const ERASER_WIDTH = 20;
+      let thickness = 8;
+      let isLocked = false;
+      let isEraser = false;
+      let isText = false;
+      let isDragging = false;
+      let lastY = 0;
+      let isDrawing = false;
+      let strokes = [];
+      let currentStroke = null;
+      let justFinishedText = false; // 防止連續開輸入框
 
-  // --- 工具列行為 ---
-  function updatePen(w) {
-    const left  = CENTER_X - w/2, right = CENTER_X + w/2;
-    penBody.setAttribute('width',  w);
-    penBody.setAttribute('x',      left);
-    penTip.setAttribute('points',  `${left},20 ${right},20 ${CENTER_X},10`);
-  }
-  function lockPen()    { isLocked = true;   isEraser = false; isText = false;
-                         penIcon.classList.add('locked','pen-glow');
-                         eraserIcon.classList.remove('locked','eraser-glow','active');
-                         textIcon.classList.remove('locked','active'); }
-  function lockEraser() { isLocked = true;   isEraser = true;  isText = false;
-                         eraserIcon.classList.add('locked','eraser-glow');
-                         penIcon.classList.remove('locked','pen-glow','active');
-                         textIcon.classList.remove('locked','active'); }
-  function lockText()   { isLocked = true;   isEraser = false; isText = true;
-                         textIcon.classList.add('locked');
-                         penIcon.classList.remove('locked','pen-glow','active');
-                         eraserIcon.classList.remove('locked','eraser-glow','active'); }
-  function unlockAll()  { isLocked = false;  isEraser = false; isText = false;
-                         penIcon.classList.remove('locked','pen-glow','active');
-                         eraserIcon.classList.remove('locked','eraser-glow','active');
-                         textIcon.classList.remove('locked','active'); }
 
-  // hover 效果
-  [penIcon, eraserIcon, textIcon].forEach(el => {
-    el.addEventListener('mouseenter', () => { if (!isLocked) el.classList.add('active'); });
-    el.addEventListener('mouseleave', () => { if (!isLocked) el.classList.remove('active'); });
-  });
-  penIcon   .addEventListener('click', () => { if (!isLocked||isEraser||isText) lockPen();    else unlockAll(); });
-  eraserIcon.addEventListener('click', () => { if (!isLocked||!isEraser||isText) lockEraser(); else unlockAll(); });
-  textIcon  .addEventListener('click', () => { if (!isLocked||isEraser||!isText) lockText();   else unlockAll(); });
-  pictures.forEach(img => img.addEventListener('click', () => { if (isLocked) unlockAll(); }));
-
-  // Ctrl+Z 撤銷
-  document.addEventListener('keydown', e => {
-    if ((e.ctrlKey||e.metaKey) && e.key==='z') {
-      e.preventDefault();
-      strokes.pop();
-      redrawAll();
-    }
-  });
-
-  // Canvas 大小同步
-// ...existing code...
-function resizeCanvas() {
-  const dpr = window.devicePixelRatio || 1;
-  canvas.width  = canvas.offsetWidth * dpr;
-  canvas.height = canvas.offsetHeight * dpr;
-  canvas.style.width  = canvas.offsetWidth + "px";
-  canvas.style.height = canvas.offsetHeight + "px";
-  ctx.setTransform(1, 0, 0, 1, 0, 0); // 重設 transform
-  ctx.scale(dpr, dpr);
-  redrawAll();
-}
-// ...existing code...
-  window.addEventListener('resize', resizeCanvas);
-  resizeCanvas();
-
-  // 滑鼠位置 → Canvas 座標
-  function pos(e) {
-    const r = canvas.getBoundingClientRect();
-    return { x: e.clientX - r.left, y: e.clientY - r.top };
-  }
-
-  // --- 文字模式：點擊畫布插入 <input>，失焦後繪製文字、移除 input（且無任何殘留「圓點」） ---
-canvas.addEventListener('click', e => {
-  if (!isLocked || !isText) return;
-  
-  // 如果剛完成文字輸入，忽略這次點擊
-  if (justFinishedText) {
-    justFinishedText = false;
-    return;
-  }
-
-  // 避免已有輸入框時重複插入
-  if (document.querySelector('.canvas-text-input')) return;
-
-  const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-  const y = e.clientY - rect.top;
-
-  const input = document.createElement('input');
-  input.type = 'text';
-  input.className = 'canvas-text-input';
-  input.style.left = `${x}px`;
-  input.style.top = `${y}px`;
-  canvasArea.appendChild(input);
-  input.focus();
-
-  input.addEventListener('mousedown', ev => ev.stopPropagation());
-  input.addEventListener('click', ev => ev.stopPropagation());
-
-  input.addEventListener('blur', ev => {
-    const text = input.value.trim();
-    input.remove();
-    justFinishedText = true; // 設置標記
-    setTimeout(() => justFinishedText = false, 100); // 短暫延遲後清除
+      // --- 顏色選擇邏輯 ---
+colorOptions.forEach(option => {
+  option.addEventListener('click', e => {
+    e.stopPropagation();
     
-    if (!text) return;
-    ctx.save();
-    ctx.fillStyle = '#c3c3c3';
-    ctx.font = '1rem serif';
-    ctx.textBaseline = 'top';
-    ctx.fillText(text, x, y);
-    ctx.restore();
-    strokes.push({ type: 'text', x, y, text });
-  });
-});
-
-
-  // --- 繪筆／橡皮擦邏輯 ---
-  canvas.addEventListener('mousedown', e => {
-    if (!isLocked || e.button!==0) return;
-    isDrawing = true;
-    const { x, y } = pos(e);
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineCap  = ctx.lineJoin = 'round';
-
-    if (isEraser) {
-      ctx.globalCompositeOperation = 'destination-out';
-      ctx.lineWidth = ERASER_WIDTH;
-    } else {
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.strokeStyle = '#c3c3c3';
-      ctx.lineWidth   = thickness;
-      currentStroke   = { points:[{x,y}], width:thickness };
-    }
-
-  });
-
-  canvas.addEventListener('mousemove', e => {
-    if (!isDrawing || e.buttons!==1) return;
-    const { x, y } = pos(e);
-    ctx.lineTo(x, y);
-    ctx.stroke();
-    if (!isEraser && currentStroke) currentStroke.points.push({x,y});
-  });
-
-  function endStroke() {
-    if (!isDrawing) return;
-    isDrawing = false;
-    ctx.closePath();
-    if (!isEraser && currentStroke) strokes.push(currentStroke);
-    currentStroke = null;
-    ctx.globalCompositeOperation = 'source-over';
-  }
-  canvas.addEventListener('mouseup',    endStroke);
-  canvas.addEventListener('mouseleave', endStroke);
-  document.addEventListener('mouseup',  endStroke);
-
-  // --- 重繪所有內容（用於撤銷後） ---
-  function redrawAll() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (const s of strokes) {
-      if (s.type==='text') {
-        ctx.save();
-        ctx.fillStyle = '#c3c3c3';
-        ctx.font      = '1rem serif';
-        ctx.textBaseline = 'top';
-        ctx.fillText(s.text, s.x, s.y);
-        ctx.restore();
-      } else {
-        ctx.beginPath();
-        ctx.lineCap    = ctx.lineJoin = 'round';
-        ctx.strokeStyle= '#c3c3c3';
-        ctx.lineWidth  = s.width;
-        const [first,...rest] = s.points;
-        ctx.moveTo(first.x, first.y);
-        rest.forEach(pt => ctx.lineTo(pt.x, pt.y));
-        ctx.stroke();
-        ctx.closePath();
-      }
-    }
-  }
-
-  // --- 畫筆粗細調整 ---
-  updatePen(thickness);
-  penIcon.addEventListener('mousedown', e => {
-    if (!isLocked || isEraser) return;
-    isDragging = true; lastY = e.clientY;
-    e.preventDefault();
-  });
-  document.addEventListener('mousemove', e => {
-    if (!isDragging) return;
-    const dy = e.clientY - lastY;
-    lastY = e.clientY;
-    thickness = Math.max(3, Math.min(14, thickness - dy*0.15));
+    // 移除其他選中狀態
+    colorOptions.forEach(opt => opt.classList.remove('selected'));
+    
+    // 設置當前選中（添加發光效果）
+    option.classList.add('selected');
+    
+    // 更新筆的顏色
+    penColor = option.dataset.color;
     updatePen(thickness);
+    
+    // 短暫延遲後隱藏顏色選擇器，讓用戶看到選中效果
+    setTimeout(() => {
+      colorPicker.classList.remove('show');
+    }, 200);
   });
-  document.addEventListener('mouseup', () => { isDragging = false; });
 });
 
+// 點擊調色盤外部時隱藏
+document.addEventListener('click', (e) => {
+  if (!colorPicker.contains(e.target) && !penIcon.contains(e.target)) {
+    colorPicker.classList.remove('show');
+  }
+});
 
-</script>
+// 防止調色盤本身的點擊事件冒泡
+colorPicker.addEventListener('click', (e) => {
+  e.stopPropagation();
+});
+      // --- 工具列行為 ---
+      function updatePen(w) {
+        const left = CENTER_X - w / 2, right = CENTER_X + w / 2;
+        penBody.setAttribute('width', w);
+        penBody.setAttribute('x', left);
+        penTip.setAttribute('points', `${left},20 ${right},20 ${CENTER_X},10`);
+        // 更新筆的顏色
+        penBody.style.fill = penColor;
+        penTip.style.fill = penColor;
+      }
+      function lockPen() {
+        isLocked = true; isEraser = false; isText = false;
+        penIcon.classList.add('locked', 'pen-glow');
+        eraserIcon.classList.remove('locked', 'eraser-glow', 'active');
+        textIcon.classList.remove('locked', 'active');
+      }
+      function lockEraser() {
+        isLocked = true; isEraser = true; isText = false;
+        eraserIcon.classList.add('locked', 'eraser-glow');
+        penIcon.classList.remove('locked', 'pen-glow', 'active');
+        textIcon.classList.remove('locked', 'active');
+      }
+      function lockText() {
+        isLocked = true; isEraser = false; isText = true;
+        textIcon.classList.add('locked');
+        penIcon.classList.remove('locked', 'pen-glow', 'active');
+        eraserIcon.classList.remove('locked', 'eraser-glow', 'active');
+      }
+      function unlockAll() {
+        isLocked = false; isEraser = false; isText = false;
+        penIcon.classList.remove('locked', 'pen-glow', 'active');
+        eraserIcon.classList.remove('locked', 'eraser-glow', 'active');
+        textIcon.classList.remove('locked', 'active');
+      }
+
+      // hover 效果
+      [penIcon, eraserIcon, textIcon].forEach(el => {
+        el.addEventListener('mouseenter', () => { if (!isLocked) el.classList.add('active'); });
+        el.addEventListener('mouseleave', () => { if (!isLocked) el.classList.remove('active'); });
+      });
+      // ...existing code...
+      penIcon.addEventListener('click', () => {
+        if (!isLocked || isEraser || isText) {
+          lockPen();
+          colorPicker.classList.add('show'); // 點擊筆時顯示調色盤
+        } else {
+          unlockAll();
+          colorPicker.classList.remove('show'); // 取消鎖定時隱藏調色盤
+        }
+      });
+      // ...existing code...
+      eraserIcon.addEventListener('click', () => { if (!isLocked || !isEraser || isText) lockEraser(); else unlockAll(); });
+      textIcon.addEventListener('click', () => { if (!isLocked || isEraser || !isText) lockText(); else unlockAll(); });
+      pictures.forEach(img => img.addEventListener('click', () => { if (isLocked) unlockAll(); }));
+
+      // Ctrl+Z 撤銷
+      document.addEventListener('keydown', e => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+          e.preventDefault();
+          strokes.pop();
+          redrawAll();
+        }
+      });
+
+      // Canvas 大小同步
+      // ...existing code...
+      function resizeCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = canvas.offsetWidth * dpr;
+        canvas.height = canvas.offsetHeight * dpr;
+        canvas.style.width = canvas.offsetWidth + "px";
+        canvas.style.height = canvas.offsetHeight + "px";
+        ctx.setTransform(1, 0, 0, 1, 0, 0); // 重設 transform
+        ctx.scale(dpr, dpr);
+        redrawAll();
+      }
+      // ...existing code...
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+
+      // 滑鼠位置 → Canvas 座標
+      function pos(e) {
+        const r = canvas.getBoundingClientRect();
+        return { x: e.clientX - r.left, y: e.clientY - r.top };
+      }
+
+      // --- 文字模式：點擊畫布插入 <input>，失焦後繪製文字、移除 input（且無任何殘留「圓點」） ---
+      canvas.addEventListener('click', e => {
+        if (!isLocked || !isText) return;
+
+        // 如果剛完成文字輸入，忽略這次點擊
+        if (justFinishedText) {
+          justFinishedText = false;
+          return;
+        }
+
+        // 避免已有輸入框時重複插入
+        if (document.querySelector('.canvas-text-input')) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'canvas-text-input';
+        input.style.left = `${x}px`;
+        input.style.top = `${y}px`;
+        canvasArea.appendChild(input);
+        input.focus();
+
+        input.addEventListener('mousedown', ev => ev.stopPropagation());
+        input.addEventListener('click', ev => ev.stopPropagation());
+
+        input.addEventListener('blur', ev => {
+          const text = input.value.trim();
+          input.remove();
+          justFinishedText = true; // 設置標記
+          setTimeout(() => justFinishedText = false, 100); // 短暫延遲後清除
+
+          if (!text) return;
+          ctx.save();
+          ctx.fillStyle = '#c3c3c3';
+          ctx.font = '1rem serif';
+          ctx.textBaseline = 'top';
+          ctx.fillText(text, x, y);
+          ctx.restore();
+          strokes.push({ type: 'text', x, y, text });
+        });
+      });
+
+
+      // --- 繪筆／橡皮擦邏輯 ---
+      canvas.addEventListener('mousedown', e => {
+        if (!isLocked || e.button !== 0) return;
+        isDrawing = true;
+        const { x, y } = pos(e);
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineCap = ctx.lineJoin = 'round';
+
+        if (isEraser) {
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.lineWidth = ERASER_WIDTH;
+        } else {
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.strokeStyle = penColor;
+          ctx.lineWidth = thickness;
+          currentStroke = { points: [{ x, y }], width: thickness, color: penColor };
+        }
+
+      });
+
+      canvas.addEventListener('mousemove', e => {
+        if (!isDrawing || e.buttons !== 1) return;
+        const { x, y } = pos(e);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        if (!isEraser && currentStroke) currentStroke.points.push({ x, y });
+      });
+
+      function endStroke() {
+        if (!isDrawing) return;
+        isDrawing = false;
+        ctx.closePath();
+        if (!isEraser && currentStroke) strokes.push(currentStroke);
+        currentStroke = null;
+        ctx.globalCompositeOperation = 'source-over';
+      }
+      canvas.addEventListener('mouseup', endStroke);
+      canvas.addEventListener('mouseleave', endStroke);
+      document.addEventListener('mouseup', endStroke);
+
+      // --- 重繪所有內容（用於撤銷後） ---
+      function redrawAll() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (const s of strokes) {
+          if (s.type === 'text') {
+            ctx.save();
+            ctx.fillStyle = '#c3c3c3';
+            ctx.font = '1rem serif';
+            ctx.textBaseline = 'top';
+            ctx.fillText(s.text, s.x, s.y);
+            ctx.restore();
+          } else {
+            ctx.beginPath();
+            ctx.lineCap = ctx.lineJoin = 'round';
+            ctx.strokeStyle = s.color || '#c3c3c3';
+            ctx.lineWidth = s.width;
+            const [first, ...rest] = s.points;
+            ctx.moveTo(first.x, first.y);
+            rest.forEach(pt => ctx.lineTo(pt.x, pt.y));
+            ctx.stroke();
+            ctx.closePath();
+          }
+        }
+      }
+
+      // --- 畫筆粗細調整 ---
+      // --- 畫筆粗細調整與顏色選擇 ---
+      updatePen(thickness);
+      penIcon.addEventListener('mousedown', e => {
+        if (!isLocked || isEraser) return;
+        isDragging = true;
+        lastY = e.clientY;
+        lastX = e.clientX; // 記錄 X 座標
+        e.preventDefault();
+      });
+
+      document.addEventListener('mousemove', e => {
+        if (!isDragging) return;
+
+        const dx = e.clientX - lastX;
+        const dy = e.clientY - lastY;
+
+        // 判斷主要拖動方向
+        if (Math.abs(dx) > Math.abs(dy)) {
+          // 左右拖動 - 顯示顏色選擇器
+          if (!isDraggingColor) {
+            isDraggingColor = true;
+            colorPicker.classList.add('show');
+          }
+        } else {
+          // 上下拖動 - 調整粗細
+          if (!isDraggingColor) {
+            lastY = e.clientY;
+            thickness = Math.max(3, Math.min(14, thickness - dy * 0.15));
+            updatePen(thickness);
+          }
+        }
+      });
+
+      document.addEventListener('mouseup', () => {
+        isDragging = false;
+        // 如果不是在顏色選項上放開，隱藏顏色選擇器
+        setTimeout(() => {
+          if (isDraggingColor && !document.querySelector('.color-option:hover')) {
+            colorPicker.classList.remove('show');
+          }
+          isDraggingColor = false;
+        }, 100);
+      });
+    });
+
+// === GPT 聊天室整合 ===
+// 聊天區容器與訊息列表
+const messagesDiv = document.querySelector('.right-side .messages');
+// 輸入框與按鈕
+const gptInput = document.getElementById('gpt-input');
+const gptSendButton = document.getElementById('gpt-send-button');
+// 產生 sessionId
+const gptSessionId = crypto.randomUUID();
+
+// 將訊息加到聊天室
+function addMessage(isUser, text) {
+  const msgDiv = document.createElement('div');
+  msgDiv.className = 'message ' + (isUser ? 'user-message' : 'bot-message');
+  const textDiv = document.createElement('div');
+  textDiv.className = 'message-text';
+  textDiv.textContent = text;
+  msgDiv.appendChild(textDiv);
+  messagesDiv.appendChild(msgDiv);
+  // 自動捲到底部
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+// 發送按鈕或 Enter
+async function handleGptSend() {
+  const userText = gptInput.value.trim();
+  if (!userText) return;
+  addMessage(true, userText);
+  gptInput.value = '';
+  gptSendButton.disabled = true;
+
+  // loading訊息
+  const loadingDiv = document.createElement('div');
+  loadingDiv.className = 'message bot-message';
+  const loadingText = document.createElement('div');
+  loadingText.className = 'message-text';
+  loadingText.innerHTML = `<span class="loading-icon" style="display:inline-block;width:16px;height:16px;border:3px solid #fff;border-top:3px solid #000;border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;"></span> 載入中...`;
+  loadingDiv.appendChild(loadingText);
+  messagesDiv.appendChild(loadingDiv);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+  try {
+    const response = await fetch('http://localhost:8080/GPT/P1', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: userText, sessionId: gptSessionId })
+    });
+    let reply;
+    if (response.ok) {
+      reply = await response.text();
+    } else {
+      reply = '伺服器錯誤，請稍後再試';
+    }
+    loadingText.textContent = reply;
+  } catch (e) {
+    loadingText.textContent = '連線失敗，請檢查網路與伺服器狀態';
+  } finally {
+    gptSendButton.disabled = false;
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+}
+
+gptSendButton.addEventListener('click', handleGptSend);
+gptInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    handleGptSend();
+  }
+});
+
+  </script>
 
 </body>
 

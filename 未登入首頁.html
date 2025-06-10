@@ -61,15 +61,22 @@
       outline:none;
     }
 
-    /* 底部列 */
-    .footer{
-      height:80px;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      background:var(--surface);
-      font-size:1.14rem;
-      letter-spacing:.04em;
+    .footer {
+      background: #1a1a1c;
+      color: #c3c3c3;
+      width: 100vw;
+      padding: 18px 0 18px 0;
+      margin: 0;
+      /* 保證不會貼齊畫面底部（避免和視窗底藍條重疊） */
+    }
+
+    .footer-container {
+      max-width: 1600px;
+      margin: 0 auto;
+      text-align: center;
+      font-size: 1.14em;
+      font-family: inherit;
+      letter-spacing: 0.04em;
     }
 
     /* 簡易 RWD：在窄螢幕時讓按鈕變寬 */
@@ -92,7 +99,8 @@
 
   <!--　頁尾　-->
   <footer class="footer">
-    客服信箱
+    <div class="footer-container">
+      客服信箱
+    </div>
   </footer>
-</body>
 </html>
