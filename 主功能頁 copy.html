@@ -602,11 +602,63 @@ position: absolute;
         max-width: none;
       }
     }
+
+        /* 遮罩樣式 */
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+      gap: 8px;
+    }
+    #overlay.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #overlay input#youtube-link {
+      width: 60%;
+      max-width: 500px;
+      padding: 10px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 4px;
+      background: #2a2a2e;
+      color: #e5e7eb;
+    }
+    #overlay input#youtube-link::placeholder {
+      color: #6b7280;
+    }
+    #overlay button#load-video {
+      padding: 10px 16px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 4px;
+      background: #2c2c2d;
+      color: #c3c3c3;
+      cursor: pointer;
+    }
+    #overlay button#load-video:hover {
+      background: #3e3e42;
+    }
   </style>
 
 </head>
 
 <body>
+    <!-- 全螢幕遮罩頁面 -->
+  <div id="overlay">
+    <input type="text" id="youtube-link" placeholder="貼上 YouTube 影片連結">
+    <button id="load-video">載入影片</button>
+  </div>
   <!-- 導覽列 -->
   <div class="navbar">
     <div class="navbar-container">
@@ -624,12 +676,12 @@ position: absolute;
     <!-- 左側主影片 -->
     <div class="left-video" id="video-area">
       <div class="video-wrapper">
-        <!-- 可以放 YouTube 影片或本地 video -->
-        <iframe src="https://www.youtube.com/embed/AtAxVcRj8dY?si=nUSEYkHmD6SXIS4w" title="YouTube video player"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-      </div>
+  <iframe id="youtube-player" src="https://www.youtube.com/embed/AtAxVcRj8dY?si=nUSEYkHmD6SXIS4w" title="YouTube video player"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+</div>
+
       <!-- 如有字幕可自行加入 -->
     </div>
     <!-- 右側大佔位div -->
@@ -734,6 +786,51 @@ position: absolute;
     </div>
   </footer>
   <script>
+        // 初始遮罩互動功能
+    const youtubeLinkInput = document.getElementById('youtube-link');
+    const loadVideoBtn = document.getElementById('load-video');
+    // 頁面載入後自動聚焦輸入框
+    youtubeLinkInput.focus();
+    // 提取 YouTube 影片ID
+    function extractYouTubeId(url) {
+      let videoId = '';
+      if (url.includes('youtu.be/')) {
+        videoId = url.split('youtu.be/')[1].split(/[?&]/)[0];
+      } else if (url.includes('v=')) {
+        videoId = url.split('v=')[1].split('&')[0];
+      } else if (url.includes('youtube.com/embed/')) {
+        videoId = url.split('embed/')[1].split(/[?&]/)[0];
+      } else if (url.length === 11 && /^[0-9A-Za-z_-]+$/.test(url)) {
+        videoId = url;
+      }
+      return videoId;
+    }
+    // 按下「載入影片」按鈕
+    loadVideoBtn.addEventListener('click', () => {
+      const url = youtubeLinkInput.value.trim();
+      if (!url) return;
+      const videoId = extractYouTubeId(url);
+      if (videoId) {
+        // 替換影片 iframe 的 src
+        const player = document.getElementById('youtube-player');
+        player.src = 'https://www.youtube.com/embed/' + videoId;
+        // 淡出並移除遮罩
+        const overlay = document.getElementById('overlay');
+        overlay.classList.add('fade-out');
+        setTimeout(() => {
+          overlay.style.display = 'none';
+        }, 600);
+      } else {
+        alert('無效的 YouTube 連結，請再試一次！');
+      }
+    });
+    // 輸入框按下 Enter 鍵也觸發載入
+    youtubeLinkInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        loadVideoBtn.click();
+      }
+    });
     document.addEventListener('DOMContentLoaded', () => {
       // --- 元素與上下文 ---
       const penIcon = document.querySelector('.pen-icon');
@@ -1095,72 +1192,88 @@ ioCanvas.observe(document.querySelector('.canvas-area'));
 
 
 // === GPT 聊天室整合 ===
-// 聊天區容器與訊息列表
-const messagesDiv = document.querySelector('.right-side .messages');
-// 輸入框與按鈕
-const gptInput = document.getElementById('gpt-input');
-const gptSendButton = document.getElementById('gpt-send-button');
-// 產生 sessionId
-const gptSessionId = crypto.randomUUID();
+document.addEventListener('DOMContentLoaded', () => {
+  // 获取所有聊天相关元素
+  const inputs      = Array.from(document.querySelectorAll('#gpt-input'));
+  const buttons     = Array.from(document.querySelectorAll('#gpt-send-button'));
+  const messagesDivs = Array.from(document.querySelectorAll('.right-side .messages'));
+  const gptSessionId = crypto.randomUUID();
 
-// 將訊息加到聊天室
-function addMessage(isUser, text) {
-  const msgDiv = document.createElement('div');
-  msgDiv.className = 'message ' + (isUser ? 'user-message' : 'bot-message');
-  const textDiv = document.createElement('div');
-  textDiv.className = 'message-text';
-  textDiv.textContent = text;
-  msgDiv.appendChild(textDiv);
-  messagesDiv.appendChild(msgDiv);
-  // 自動捲到底部
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
-}
+  // 创建一条消息的 DOM
+  function createMessageElement(isUser, text) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'message ' + (isUser ? 'user-message' : 'bot-message');
+    const textDiv = document.createElement('div');
+    textDiv.className = 'message-text';
+    textDiv.textContent = text;
+    msgDiv.appendChild(textDiv);
+    return msgDiv;
+  }
 
-// 發送按鈕或 Enter
-async function handleGptSend() {
-  const userText = gptInput.value.trim();
-  if (!userText) return;
-  addMessage(true, userText);
-  gptInput.value = '';
-  gptSendButton.disabled = true;
+  // 发送逻辑：读取当前可见输入框，向所有 messages 容器写入
+  async function handleGptSend() {
+    // 找到当前可见的输入框
+    const activeInput = inputs.find(i => i.offsetParent !== null);
+    if (!activeInput) return;
+    const userText = activeInput.value.trim();
+    if (!userText) return;
 
-  // loading訊息
-  const loadingDiv = document.createElement('div');
-  loadingDiv.className = 'message bot-message';
-  const loadingText = document.createElement('div');
-  loadingText.className = 'message-text';
-  loadingText.innerHTML = `<span class="loading-icon" style="display:inline-block;width:16px;height:16px;border:3px solid #fff;border-top:3px solid #000;border-radius:50%;animation:spin 1s linear infinite;vertical-align:middle;"></span> 載入中...`;
-  loadingDiv.appendChild(loadingText);
-  messagesDiv.appendChild(loadingDiv);
-  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    // 清空输入框并禁用按钮
+    activeInput.value = '';
+    buttons.forEach(btn => btn.disabled = true);
 
-  try {
-    const response = await fetch('http://localhost:8080/GPT/P1', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question: userText, sessionId: gptSessionId })
+    // 将使用者消息添加到所有聊天区
+    messagesDivs.forEach(div => {
+      div.appendChild(createMessageElement(true, userText));
+      div.scrollTop = div.scrollHeight;
     });
-    let reply;
-    if (response.ok) {
-      reply = await response.text();
-    } else {
-      reply = '伺服器錯誤，請稍後再試';
-    }
-    loadingText.textContent = reply;
-  } catch (e) {
-    loadingText.textContent = '連線失敗，請檢查網路與伺服器狀態';
-  } finally {
-    gptSendButton.disabled = false;
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-  }
-}
 
-gptSendButton.addEventListener('click', handleGptSend);
-gptInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    handleGptSend();
+    // 显示所有聊天区的「載入中...」
+    const loadingEntries = messagesDivs.map(div => {
+      const loadingDiv = createMessageElement(false, '');
+      const loadingText = loadingDiv.querySelector('.message-text');
+      loadingText.innerHTML = `<span class="loading-icon" style="
+        display:inline-block;width:16px;height:16px;
+        border:3px solid #fff;border-top:3px solid #000;
+        border-radius:50%;animation:spin 1s linear infinite;
+        vertical-align:middle;"></span> 載入中...`;
+      div.appendChild(loadingDiv);
+      div.scrollTop = div.scrollHeight;
+      return { div, loadingText };
+    });
+
+    try {
+      const resp = await fetch('http://localhost:8080/GPT/P1', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: userText, sessionId: gptSessionId })
+      });
+      const reply = resp.ok ? await resp.text() : '伺服器錯誤，請稍後再試';
+      // 更新所有 loading 文本为回复
+      loadingEntries.forEach(({ div, loadingText }) => {
+        loadingText.textContent = reply;
+        div.scrollTop = div.scrollHeight;
+      });
+    } catch (e) {
+      loadingEntries.forEach(({ div, loadingText }) => {
+        loadingText.textContent = '連線失敗，請檢查網路與伺服器狀態';
+        div.scrollTop = div.scrollHeight;
+      });
+    } finally {
+      buttons.forEach(btn => btn.disabled = false);
+    }
   }
+
+  // 绑定按钮和回车事件
+  buttons.forEach(btn => btn.addEventListener('click', handleGptSend));
+  inputs.forEach(input => {
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleGptSend();
+      }
+    });
+  });
 });
 
   </script>

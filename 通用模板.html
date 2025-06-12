@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>通用頁面模板</title>
+  <style>
+    /* 全局變量 */
+    :root {
+      --bg-primary: #0d0d0f;
+      --bg-secondary: #1a1a1c;
+      --text-light: #c3c3c3;
+      --bg-bot-input: #2a2a2e;
+      --text-bot: #e5e7eb;
+      --bg-user: #3e3e42;
+      --text-user: #f3f4f6;
+      --border-input: #2c2c2e;
+      --placeholder: #6b7280;
+      --btn-disabled: #4b5563;
+    }
+    /* 基本重置 */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow-x: hidden;
+    }
+    /* 佈局佈局：讓 footer 在短頁面時貼底，長頁面時隨內容下移 */
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: var(--bg-primary);
+      color: var(--text-light);
+      font-family: "Noto Sans TC", Arial, sans-serif;
+    }
+
+    /* 導覽列 */
+    .navbar {
+      background: var(--bg-secondary);
+      color: var(--text-light);
+      padding: 16px 24px;
+      font-size: 1.3em;
+    }
+    .navbar-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .nav-links {
+      display: flex;
+      gap: 30px;
+    }
+
+    /* 主內容區，佔滿剩餘高度 */
+    main {
+      flex: 1;
+      padding: 24px;
+      width: 100%;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* 頁腳 */
+    .footer {
+      background: var(--bg-secondary);
+      color: var(--text-light);
+      width: 100%;
+      padding: 18px 0;
+      /* margin-top 改由 flex 自動推動 */
+    }
+    .footer-container {
+      max-width: 1600px;
+      margin: 0 auto;
+      text-align: center;
+      font-size: 1.14em;
+      letter-spacing: 0.04em;
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="navbar-container">
+      <div>Logo</div>
+      <div class="nav-links">
+        <div>資料中心</div>
+        <div>商城</div>
+        <div>經驗值</div>
+        <div>設定</div>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <!-- 這裡放各頁面具體內容 -->
+  </main>
+
+  <footer class="footer">
+    <div class="footer-container">客服信箱</div>
+  </footer>
+</body>
+</html>

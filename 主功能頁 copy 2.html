@@ -6,11 +6,26 @@
   <title>主頁面</title>
   <style>
     /* 全局：背景色、文字色、字体 */
+      :root {
+    --bg-primary: #0d0d0f;
+    --bg-secondary: #1a1a1c;
+    --text-light: #c3c3c3;
+    --bg-bot-input: #2a2a2e;
+    --text-bot: #e5e7eb;
+    --bg-user: #3e3e42;
+    --text-user: #f3f4f6;
+    --border-input: #2c2c2e;
+    --placeholder: #6b7280;
+    --btn-disabled: #4b5563;
+  }
+
+    html, body {
+  overflow-x: hidden;
+}
     body {
       margin: 0;
-      background: #0d0d0f;
-      /* 原来：#181818，改为更深的梦魇背景 */
-      color: #c3c3c3;
+      background: var(--bg-primary);
+      color: var(--text-light);
       /* 原来：#fff，文字改为浅灰以减低对比 */
       font-family: "Noto Sans TC", Arial, sans-serif;
     }
@@ -20,9 +35,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #1a1a1c;
+      background: var(--bg-secondary);
       /* 原来：#fff，改为深灰 */
-      color: #c3c3c3;
+      color: var(--text-light);
       /* 与正文文字保持一致 */
       padding: 16px 24px;
       font-size: 1.3em;
@@ -52,7 +67,7 @@
 
     .nav-links>div {
       /* 原来没有单独定义链接颜色，此处显式调整 */
-      color: #c3c3c3;
+      color: var(--text-light);
       margin: 0;
       padding: 0;
     }
@@ -82,7 +97,7 @@
       width: 100%;
       padding-bottom: 56.25%;
       /* 16:9 */
-      background: #1a1a1c;
+      background: var(--bg-secondary);
       /* 原来：#222，改为更深的灰黑 */
       overflow: hidden;
     }
@@ -100,6 +115,29 @@
       object-fit: contain;
     }
 
+    #subtitle {
+  position: absolute;
+  left: 50%;
+  bottom: 8%; /* 字幕浮動位置，可調整7~12% */
+  transform: translateX(-50%);
+  width: 92%;
+  background: rgba(0,0,0,0.74);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 1.15rem;
+  text-align: center;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  text-shadow:
+    0 1px 2px #000,
+    0 0 2px #000,
+    0 0 4px #000;
+  z-index: 3;
+  user-select: none;
+  min-height: 24px;
+}
+
     /* 修復右側聊天區域 */
 .right-side {
   position: relative;
@@ -111,11 +149,11 @@
   max-width: 350px;
   min-width: 200px;
   
-  background: #0d0d0f;
+  background: var(--bg-primary);
   
   padding: 0 12px;
   box-sizing: border-box;
-  color: #c3c3c3;
+  color: var(--text-light);
   overflow: hidden;
   
   /* 關鍵：計算出與影片相同的高度 - 16:9比例 + padding */
@@ -125,7 +163,7 @@
 
     /* 聊天區容器 - 關鍵修復 */
     .chat-container {
-      background-color: #1a1a1c;
+      background-color: var(--bg-secondary);
       display: flex;
       flex-direction: column;
       height: 100%; /* 填滿父容器 */
@@ -154,10 +192,10 @@
     }
 
     .bot-message .message-text {
-      background: #2a2a2e;
+      background: var(--bg-bot-input);
       padding: 8px 12px;
       border-radius: 8px;
-      color: #e5e7eb;
+      color: var(--text-bot);
       max-width: 80%;
       word-break: break-word;
     }
@@ -168,10 +206,10 @@
     }
 
     .user-message .message-text {
-      background: #3e3e42;
+      background: var(--bg-user);
       padding: 8px 12px;
       border-radius: 8px;
-      color: #f3f4f6;
+      color: var(--text-user);
       max-width: 80%;
       word-break: break-word;
     }
@@ -184,25 +222,25 @@
       align-items: center;
       margin: 0px 10px 8px 10px;
       padding-top: 8px;
-      border-top: 1px solid #2c2c2e;
+      border-top: 1px solid var(--border-input);
       /* 上方分隔線 */
     }
 
     /* 輸入框 */
     .input-area input {
       flex: 1;
-      background: #2a2a2e;
+      background: var(--bg-bot-input);
       border: none;
       border-radius: 6px;
       padding: 8px 12px;
-      color: #e5e7eb;
+      color: var(--text-bot);
       font-size: 0.95em;
       outline: none;
     }
 
     /* placeholder 文字顏色 */
     .input-area input::placeholder {
-      color: #6b7280;
+      color: var(--placeholder);
     }
 
     /* 發送按鈕 */
@@ -220,11 +258,11 @@
     }
 
     .input-area button:hover {
-      color: #e5e7eb;
+      color: var(--text-bot);
     }
 
     .input-area button:disabled {
-      color: #4b5563;
+      color: var(--btn-disabled);
       cursor: default;
     }
 
@@ -239,7 +277,7 @@
 
     /* 原本的畫板設定（請將這段取代掉原本的 .canvas-area） */
 .canvas-area {
-  background: #1a1a1c;
+  background: var(--bg-secondary);
   
   /* 改為與 main-layout 相同的寬度限制和置中 */
   width: 100%;
@@ -294,14 +332,14 @@
 
     /* 筆桿樣式 */
     .pen-body {
-      fill: #c3c3c3;
+      fill: var(--text-light);
       /* 預設顏色，JS動態設置即可變 */
       /*transition: width 0.2s, fill 0.2s;*/
     }
 
     /* 筆尖樣式 */
     .pen-tip {
-      fill: #c3c3c3;
+      fill: var(--text-light);
       transition: fill 0.2s;
     }
 
@@ -395,7 +433,7 @@
     }
 
     .color-white {
-      background-color: #c3c3c3;
+      background-color: var(--text-light);
     }
 
     /* 橡皮擦顏色 (稍淺、與筆有區隔) */
@@ -445,7 +483,7 @@
       height: 40px;
       text-align: center;
       line-height: 40px;
-      color: #c3c3c3;
+      color: var(--text-light);
       padding: 4px;
       /* 增加可点击范围 */
     }
@@ -474,7 +512,7 @@
       position: absolute;
       border: 1px dashed #777;
       background: transparent;
-      color: #c3c3c3;
+      color: var(--text-light);
       font-family: serif;
       font-size: 1rem;
       padding: 2px 4px;
@@ -488,7 +526,7 @@ position: absolute;
     right: 0;
     bottom: -88px;
     height: 80px;
-    background: #0d0d0f;
+    background: var(--bg-primary);
     z-index: 3;
     pointer-events: none;
 }
@@ -504,7 +542,7 @@ position: absolute;
       letter-spacing: 0.01em;
       border: none;
       background: #2c2c2d;
-      color: #c3c3c3;
+      color: var(--text-light);
       box-shadow: 0 2px 12px rgba(0, 0, 0, 0.13), 0 1.5px 4px rgba(0, 0, 0, 0.10);
       cursor: pointer;
       transition: background 0.2s cubic-bezier(.4, .09, .35, 1), color 0.2s, box-shadow .18s cubic-bezier(.4, .09, .35, 1);
@@ -532,8 +570,8 @@ position: absolute;
     }
 
     .footer {
-      background: #1a1a1c;
-      color: #c3c3c3;
+      background: var(--bg-secondary);
+      color: var(--text-light);
       width: 100vw;
       padding: 18px 0 18px 0;
       margin-top: 2rem;
@@ -602,11 +640,63 @@ position: absolute;
         max-width: none;
       }
     }
+
+        /* 遮罩樣式 */
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(5px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+      gap: 8px;
+    }
+    #overlay.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #overlay input#youtube-link {
+      width: 60%;
+      max-width: 500px;
+      padding: 10px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 4px;
+      background: var(--bg-bot-input);
+      color: var(--text-bot);
+    }
+    #overlay input#youtube-link::placeholder {
+      color: var(--placeholder);
+    }
+    #overlay button#load-video {
+      padding: 10px 16px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 4px;
+      background: #2c2c2d;
+      color: var(--text-light);
+      cursor: pointer;
+    }
+    #overlay button#load-video:hover {
+      background: var(--bg-user);
+    }
   </style>
 
 </head>
 
 <body>
+    <!-- 全螢幕遮罩頁面 -->
+  <div id="overlay">
+    <input type="text" id="youtube-link" placeholder="貼上 YouTube 影片連結">
+    <button id="load-video">載入影片</button>
+  </div>
   <!-- 導覽列 -->
   <div class="navbar">
     <div class="navbar-container">
@@ -624,12 +714,13 @@ position: absolute;
     <!-- 左側主影片 -->
     <div class="left-video" id="video-area">
       <div class="video-wrapper">
-        <!-- 可以放 YouTube 影片或本地 video -->
-        <iframe src="https://www.youtube.com/embed/AtAxVcRj8dY?si=nUSEYkHmD6SXIS4w" title="YouTube video player"
-          frameborder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-      </div>
+  <iframe id="youtube-player" src="https://www.youtube.com/embed/AtAxVcRj8dY?si=nUSEYkHmD6SXIS4w" title="YouTube video player"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    <div id="subtitle"></div>
+</div>
+
       <!-- 如有字幕可自行加入 -->
     </div>
     <!-- 右側大佔位div -->
@@ -677,7 +768,7 @@ position: absolute;
           <div class="color-option color-red" data-color="#ef4444"></div>
           <div class="color-option color-yellow" data-color="#eab308"></div>
           <div class="color-option color-blue" data-color="#3b82f6"></div>
-          <div class="color-option color-white selected" data-color="#c3c3c3"></div>
+          <div class="color-option color-white selected" data-color="var(--text-light)"></div>
         </div>
       </span>
       <!-- 這裡是橡皮擦圖示 -->
@@ -734,6 +825,51 @@ position: absolute;
     </div>
   </footer>
   <script>
+        // 初始遮罩互動功能
+    const youtubeLinkInput = document.getElementById('youtube-link');
+    const loadVideoBtn = document.getElementById('load-video');
+    // 頁面載入後自動聚焦輸入框
+    youtubeLinkInput.focus();
+    // 提取 YouTube 影片ID
+    function extractYouTubeId(url) {
+      let videoId = '';
+      if (url.includes('youtu.be/')) {
+        videoId = url.split('youtu.be/')[1].split(/[?&]/)[0];
+      } else if (url.includes('v=')) {
+        videoId = url.split('v=')[1].split('&')[0];
+      } else if (url.includes('youtube.com/embed/')) {
+        videoId = url.split('embed/')[1].split(/[?&]/)[0];
+      } else if (url.length === 11 && /^[0-9A-Za-z_-]+$/.test(url)) {
+        videoId = url;
+      }
+      return videoId;
+    }
+    // 按下「載入影片」按鈕
+    loadVideoBtn.addEventListener('click', () => {
+      const url = youtubeLinkInput.value.trim();
+      if (!url) return;
+      const videoId = extractYouTubeId(url);
+      if (videoId) {
+        // 替換影片 iframe 的 src
+        const player = document.getElementById('youtube-player');
+        player.src = 'https://www.youtube.com/embed/' + videoId;
+        // 淡出並移除遮罩
+        const overlay = document.getElementById('overlay');
+        overlay.classList.add('fade-out');
+        setTimeout(() => {
+          overlay.style.display = 'none';
+        }, 600);
+      } else {
+        alert('無效的 YouTube 連結，請再試一次！');
+      }
+    });
+    // 輸入框按下 Enter 鍵也觸發載入
+    youtubeLinkInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        loadVideoBtn.click();
+      }
+    });
     document.addEventListener('DOMContentLoaded', () => {
       // --- 元素與上下文 ---
       const penIcon = document.querySelector('.pen-icon');
@@ -747,7 +883,7 @@ position: absolute;
       const ctx = canvas.getContext('2d');
       const colorPicker = penIcon.querySelector('.color-picker');
       const colorOptions = penIcon.querySelectorAll('.color-option');
-      let penColor = '#c3c3c3'; // 當前筆的顏色
+      let penColor = 'var(--text-light)'; // 當前筆的顏色
       let isDraggingColor = false; // 新增：是否正在拖動選擇顏色
       let lastX = 0; // 新增：記錄上次的 X 座標
 
@@ -921,7 +1057,7 @@ colorPicker.addEventListener('click', (e) => {
 
           if (!text) return;
           ctx.save();
-          ctx.fillStyle = '#c3c3c3';
+          ctx.fillStyle = 'var(--text-light)';
           ctx.font = '1rem serif';
           ctx.textBaseline = 'top';
           ctx.fillText(text, x, y);
@@ -978,7 +1114,7 @@ colorPicker.addEventListener('click', (e) => {
         for (const s of strokes) {
           if (s.type === 'text') {
             ctx.save();
-            ctx.fillStyle = '#c3c3c3';
+            ctx.fillStyle = 'var(--text-light)';
             ctx.font = '1rem serif';
             ctx.textBaseline = 'top';
             ctx.fillText(s.text, s.x, s.y);
@@ -986,7 +1122,7 @@ colorPicker.addEventListener('click', (e) => {
           } else {
             ctx.beginPath();
             ctx.lineCap = ctx.lineJoin = 'round';
-            ctx.strokeStyle = s.color || '#c3c3c3';
+            ctx.strokeStyle = s.color || 'var(--text-light)';
             ctx.lineWidth = s.width;
             const [first, ...rest] = s.points;
             ctx.moveTo(first.x, first.y);
@@ -1178,6 +1314,287 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
+let player = null;
+const subtitleDiv = document.getElementById("subtitle");
+let subtitles = []; // 儲存所有字幕物件
+let playerReady = false;
+let videoIdToLoad = null; // 儲存待載入的影片ID
+let lastSubtitle = null; // 記錄上一次顯示的字幕
+let subtitleSystemReady = false; // 新增：追蹤字幕系統是否準備就緒
+
+// API 端點
+const API_URL = "http://127.0.0.1:8000";
+
+console.log("腳本已載入"); // 確認腳本載入
+
+// YouTube Iframe API 載入後會呼叫
+function onYouTubeIframeAPIReady() {
+    console.log("YouTube API 已準備就緒"); // 確認 API 載入
+    initializePlayer();
+}
+
+// 初始化播放器
+function initializePlayer() {
+    if (typeof YT === 'undefined' || typeof YT.Player === 'undefined') {
+        console.log("YouTube API 尚未準備好，等待中...");
+        setTimeout(initializePlayer, 100);
+        return;
+    }
+
+    console.log("正在初始化播放器..."); // 記錄初始化開始
+    player = new YT.Player("player", {
+        height: "360",
+        width: "640",
+        videoId: '',
+        playerVars: {
+            'playsinline': 1,
+            'origin': window.location.origin,
+            'enablejsapi': 1,
+            'autoplay': 0,
+            'host': 'https://www.youtube.com'
+        },
+        events: {
+            onReady: (event) => {
+                console.log("播放器已準備就緒"); // 確認播放器準備就緒
+                playerReady = true;
+                if (videoIdToLoad) {
+                    loadYouTubeVideo(videoIdToLoad);
+                    videoIdToLoad = null;
+                }
+            },
+            onStateChange: onPlayerStateChange,
+            onError: (event) => {
+                console.error("播放器錯誤:", event.data); // 記錄播放器錯誤
+                let errorMessage = "影片載入失敗";
+                switch(event.data) {
+                    case 2:
+                        errorMessage = "無效的影片網址";
+                        break;
+                    case 5:
+                        errorMessage = "HTML5 播放器錯誤";
+                        break;
+                    case 100:
+                        errorMessage = "找不到影片";
+                        break;
+                    case 101:
+                    case 150:
+                        errorMessage = "影片不允許嵌入播放";
+                        break;
+                }
+                alert(errorMessage);
+            }
+        }
+    });
+}
+
+// 監聽播放器狀態變化
+function onPlayerStateChange(event) {
+    let stateText = "";
+    switch(event.data) {
+        case YT.PlayerState.ENDED:
+            stateText = "已結束";
+            break;
+        case YT.PlayerState.PLAYING:
+            stateText = "正在播放";
+            break;
+        case YT.PlayerState.PAUSED:
+            stateText = "已暫停";
+            break;
+        case YT.PlayerState.BUFFERING:
+            stateText = "緩衝中";
+            break;
+        case YT.PlayerState.CUED:
+            stateText = "已準備";
+            break;
+        default:
+            stateText = "未開始";
+    }
+    console.log("播放器狀態變更:", stateText);
+    
+    if (event.data == YT.PlayerState.PLAYING) {
+        console.log("影片開始播放"); 
+        updateSubtitle();
+    }
+}
+
+// 解析 YouTube URL，取出影片ID
+function getYouTubeID(url) {
+    const regExp = /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    const videoId = match && match[1].length === 11 ? match[1] : null;
+    console.log("Extracted video ID:", videoId); // 記錄解析出的影片ID
+    return videoId;
+}
+
+// 解析單段 SRT 字幕（時間與文字）
+function parseSingleSRT(srtText) {
+    const lines = srtText.trim().split("\n");
+    if (lines.length < 3) return null;
+
+    const timeMatch = lines[1].match(/(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})/);
+    if (!timeMatch) return null;
+
+    function toSeconds(t) {
+        const [h, m, s, ms] = t.split(/[:,]/);
+        return (+h) * 3600 + (+m) * 60 + (+s) + (+ms) / 1000;
+    }
+
+    return {
+        start: toSeconds(timeMatch[1]),
+        end: toSeconds(timeMatch[2]),
+        text: lines.slice(2).join("\n").trim()
+    };
+}
+
+// 載入 YouTube 影片
+function loadYouTubeVideo(videoId) {
+    console.log("Attempting to load video:", videoId); // 記錄嘗試載入影片
+    
+    if (!playerReady) {
+        console.log("Player not ready, storing video ID for later..."); // 記錄等待狀態
+        videoIdToLoad = videoId;
+        return;
+    }
+    
+    try {
+        console.log("Loading video..."); // 記錄開始載入
+        player.loadVideoById({
+            videoId: videoId,
+            startSeconds: 0
+        });
+        player.playVideo();
+    } catch (err) {
+        console.error("載入影片時發生錯誤：", err);
+        subtitleDiv.textContent = "載入影片時發生錯誤，請重新整理頁面後再試";
+    }
+}
+
+// 持續更新字幕顯示
+function updateSubtitle() {
+    if (!playerReady || !player) {
+        requestAnimationFrame(updateSubtitle);
+        return;
+    }
+
+    try {
+        // 只在播放狀態且有字幕時更新字幕
+        if (player.getPlayerState() === YT.PlayerState.PLAYING && subtitles.length > 0) {
+            const currentTime = player.getCurrentTime();
+            let currentSub = null;
+
+            // 從後往前找，找當前時間落在哪個字幕區間
+            for (let i = subtitles.length - 1; i >= 0; i--) {
+                if (currentTime >= subtitles[i].start && currentTime <= subtitles[i].end) {
+                    currentSub = currentSub || subtitles[i];
+                    break;
+                }
+            }
+
+            // 只有當字幕內容改變時才更新顯示
+            if (currentSub && (!lastSubtitle || lastSubtitle.text !== currentSub.text)) {
+                console.log("字幕更新:", currentSub.text);
+                lastSubtitle = currentSub;
+                subtitleDiv.textContent = currentSub.text;
+            } else if (!currentSub && lastSubtitle) {
+                subtitleDiv.textContent = "";
+                lastSubtitle = null;
+            }
+        }
+        
+        requestAnimationFrame(updateSubtitle);
+    } catch (err) {
+        console.error("更新字幕時發生錯誤：", err);
+        requestAnimationFrame(updateSubtitle);
+    }
+}
+
+// 按鈕事件：開始轉錄並播放影片
+document.getElementById("startBtn").onclick = async () => {
+    console.log("開始按鈕被點擊"); 
+    
+    const url = document.getElementById("youtubeUrl").value.trim();
+    const videoId = getYouTubeID(url);
+
+    if (!videoId) {
+        alert("請輸入正確的 YouTube 連結");
+        return;
+    }
+
+    subtitleDiv.textContent = "準備中...";
+    subtitles = []; // 清除之前的字幕
+    lastSubtitle = null; // 重置上一次的字幕
+    subtitleSystemReady = false; // 重置字幕系統狀態
+
+    try {
+        console.log("正在從 API 獲取字幕..."); 
+        const response = await fetch(`${API_URL}/api/generate-subtitle`, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+                youtube_url: url,
+                segment_duration: "30"
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`伺服器錯誤！狀態碼: ${response.status}`);
+        }
+
+        if (!response.body) {
+            subtitleDiv.textContent = "無法取得字幕串流";
+            return;
+        }
+
+        console.log("開始讀取字幕串流..."); 
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let buffer = "";
+        let subtitleCount = 0;
+        const startTime = Date.now();
+
+        // 開始字幕更新循環
+        updateSubtitle();
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const parts = buffer.split("\n\n");
+            buffer = parts.pop(); 
+
+            for (const part of parts) {
+                const subtitle = parseSingleSRT(part);
+                if (subtitle) {
+                    subtitles.push(subtitle);
+                    subtitleCount++;
+                    
+                    // 更新進度提示
+                    if (subtitleCount === 1) {
+                        console.log("收到第一個字幕，字幕系統準備就緒");
+                        subtitleDiv.textContent = "字幕系統準備就緒，開始播放影片";
+                        subtitleSystemReady = true; // 標記字幕系統已準備就緒
+                        // 在收到第一個字幕時才開始播放影片
+                        loadYouTubeVideo(videoId);
+                    }
+                    
+                    // 每收到10個字幕更新一次進度
+                    if (subtitleCount % 10 === 0) {
+                        const elapsedTime = ((Date.now() - startTime) / 1000).toFixed(1);
+                        console.log(`已處理 ${subtitleCount} 個字幕 (${elapsedTime}秒)`);
+                    }
+                }
+            }
+        }
+
+        console.log(`字幕生成完成。共 ${subtitles.length} 個字幕`);
+        
+    } catch (err) {
+        console.error("產生字幕時發生錯誤：", err);
+        subtitleDiv.textContent = "產生字幕時發生錯誤：" + (err.message || "未知錯誤");
+    }
+};
 
   </script>
 

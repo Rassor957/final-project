@@ -18,7 +18,7 @@ import yt_dlp
 import whisper
 
 # 設定 ffmpeg 路徑
-FFMPEG_PATH = r"D:\ffmpeg\ffmpeg-master-latest-win64-gpl\bin"
+FFMPEG_PATH = r"D:\ffmpeg\ffmpeg-7.1.1-essentials_build\bin"
 
 app = FastAPI()
 
